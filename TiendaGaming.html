@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NEXUS STORE — Electronics</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg-deep: #040810;
+      --bg-card: #080f1e;
+      --bg-card2: #0a1525;
+      --cyan: #00f5ff;
+      --magenta: #ff00aa;
+      --green: #39ff14;
+      --orange: #ff6b00;
+      --purple: #9b00ff;
+      --text: #c8d8f0;
+      --text-dim: #5a7a9a;
+      --border: rgba(0,245,255,0.15);
+      --glow-cyan: 0 0 20px rgba(0,245,255,0.5), 0 0 40px rgba(0,245,255,0.2);
+      --glow-mag: 0 0 20px rgba(255,0,170,0.5), 0 0 40px rgba(255,0,170,0.2);
+      --glow-green: 0 0 20px rgba(57,255,20,0.5), 0 0 40px rgba(57,255,20,0.2);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg-deep);
+      color: var(--text);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 17px;
+      overflow-x: hidden;
+    }
+
+    /* ─── SCANLINE OVERLAY ─── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.07) 2px,
+        rgba(0,0,0,0.07) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ─── NOISE GRAIN ─── */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9998;
+      opacity: 0.4;
+    }
+
+    /* ─── CUSTOM SCROLLBAR ─── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #020508; }
+    ::-webkit-scrollbar-thumb { background: var(--cyan); border-radius: 3px; }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; width: 100%; z-index: 1000;
+      padding: 0 5%;
+      background: rgba(4,8,16,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      height: 68px;
+    }
+
+    .nav-logo {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.35rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      color: #fff;
+    }
+    .nav-logo span { color: var(--cyan); text-shadow: var(--glow-cyan); }
+
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: color 0.3s, text-shadow 0.3s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute; bottom: -4px; left: 0;
+      width: 0; height: 1px;
+      background: var(--cyan);
+      transition: width 0.3s;
+    }
+    .nav-links a:hover { color: var(--cyan); text-shadow: var(--glow-cyan); }
+    .nav-links a:hover::after { width: 100%; }
+
+    .nav-cart {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--bg-deep);
+      background: var(--cyan);
+      padding: 8px 20px;
+      border: none; cursor: pointer;
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+      transition: box-shadow 0.3s, transform 0.2s;
+      letter-spacing: 0.1em;
+    }
+    .nav-cart:hover { box-shadow: var(--glow-cyan); transform: translateY(-1px); }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 100px 5% 60px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,245,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,245,255,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridMove 20s linear infinite;
+    }
+    @keyframes gridMove {
+      from { transform: translateY(0); }
+      to   { transform: translateY(60px); }
+    }
+
+    .hero-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      animation: pulse 6s ease-in-out infinite;
+    }
+    .hero-orb-1 { width: 600px; height: 600px; background: rgba(0,245,255,0.08); top: -200px; left: -150px; animation-delay: 0s; }
+    .hero-orb-2 { width: 500px; height: 500px; background: rgba(255,0,170,0.07); bottom: -100px; right: -100px; animation-delay: 2s; }
+    .hero-orb-3 { width: 300px; height: 300px; background: rgba(155,0,255,0.07); top: 40%; left: 50%; transform: translate(-50%,-50%); animation-delay: 4s; }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.1); }
+    }
+
+    .hero-eyebrow {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--cyan);
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      position: relative;
+      display: inline-block;
+    }
+    .hero-eyebrow::before, .hero-eyebrow::after {
+      content: '//';
+      color: rgba(0,245,255,0.4);
+      margin: 0 12px;
+    }
+
+    .hero-title {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(3rem, 9vw, 7.5rem);
+      font-weight: 900;
+      line-height: 0.9;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.3em;
+      position: relative;
+    }
+    .hero-title .line1 { color: #fff; display: block; }
+    .hero-title .line2 {
+      display: block;
+      background: linear-gradient(135deg, var(--cyan) 0%, var(--magenta) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 30px rgba(0,245,255,0.4));
+    }
+
+    .hero-sub {
+      font-size: 1.1rem;
+      color: var(--text-dim);
+      max-width: 520px;
+      line-height: 1.7;
+      margin: 1.5rem auto 2.5rem;
+      font-weight: 300;
+      letter-spacing: 0.03em;
+    }
+
+    .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+
+    .btn-primary {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 14px 36px;
+      background: linear-gradient(135deg, var(--cyan), #0088bb);
+      color: var(--bg-deep);
+      border: none; cursor: pointer;
+      clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+      transition: all 0.3s;
+      text-decoration: none; display: inline-block;
+    }
+    .btn-primary:hover { box-shadow: var(--glow-cyan); transform: translateY(-2px); }
+
+    .btn-outline {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.8rem; font-weight: 700;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      padding: 13px 36px;
+      background: transparent;
+      color: var(--magenta);
+      border: 1px solid var(--magenta);
+      cursor: pointer;
+      clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+      transition: all 0.3s;
+      text-decoration: none; display: inline-block;
+    }
+    .btn-outline:hover { background: rgba(255,0,170,0.1); box-shadow: var(--glow-mag); transform: translateY(-2px); }
+
+    .hero-stats {
+      display: flex; gap: 3rem; margin-top: 4rem;
+      position: relative;
+    }
+    .stat-item { text-align: center; }
+    .stat-num {
+      font-family: 'Orbitron', monospace;
+      font-size: 2rem; font-weight: 900;
+      color: var(--cyan);
+      text-shadow: var(--glow-cyan);
+    }
+    .stat-label {
+      font-size: 0.75rem; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--text-dim); margin-top: 4px;
+    }
+    .stat-divider { width: 1px; background: var(--border); align-self: stretch; }
+
+    /* ─── SECTION COMMONS ─── */
+    section { padding: 100px 5%; position: relative; }
+
+    .section-header { text-align: center; margin-bottom: 70px; }
+
+    .section-tag {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      display: inline-block;
+      padding: 6px 16px;
+      border: 1px solid currentColor;
+      margin-bottom: 1.2rem;
+    }
+
+    .section-title {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      line-height: 1.1;
+    }
+    .section-title span {
+      display: block;
+      font-size: 0.45em;
+      font-weight: 400;
+      letter-spacing: 0.25em;
+      color: var(--text-dim);
+      margin-top: 0.6em;
+      font-family: 'Rajdhani', sans-serif;
+    }
+
+    .section-line {
+      width: 80px; height: 2px;
+      margin: 1.5rem auto 0;
+    }
+
+    /* ─── PRODUCT GRID ─── */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 24px;
+    }
+
+    .product-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s, border-color 0.3s;
+      cursor: pointer;
+    }
+    .product-card:hover { transform: translateY(-6px); }
+
+    /* Corner accents */
+    .product-card::before, .product-card::after {
+      content: '';
+      position: absolute;
+      width: 16px; height: 16px;
+      transition: opacity 0.3s;
+      opacity: 0;
+    }
+    .product-card::before { top: 0; right: 0; border-top: 2px solid currentColor; border-right: 2px solid currentColor; }
+    .product-card::after  { bottom: 0; left: 0; border-bottom: 2px solid currentColor; border-left: 2px solid currentColor; }
+    .product-card:hover::before, .product-card:hover::after { opacity: 1; }
+
+    /* Section-specific card accents */
+    #accesorios .product-card { color: var(--cyan); }
+    #accesorios .product-card:hover { border-color: rgba(0,245,255,0.4); box-shadow: 0 0 30px rgba(0,245,255,0.1), inset 0 0 30px rgba(0,245,255,0.03); }
+
+    #piezas .product-card { color: var(--magenta); }
+    #piezas .product-card:hover { border-color: rgba(255,0,170,0.4); box-shadow: 0 0 30px rgba(255,0,170,0.1), inset 0 0 30px rgba(255,0,170,0.03); }
+
+    #perifericos .product-card { color: var(--green); }
+    #perifericos .product-card:hover { border-color: rgba(57,255,20,0.4); box-shadow: 0 0 30px rgba(57,255,20,0.1), inset 0 0 30px rgba(57,255,20,0.03); }
+
+    .card-img {
+      width: 100%; aspect-ratio: 4/3;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .card-img-bg {
+      position: absolute; inset: 0;
+      opacity: 0.06;
+      transition: opacity 0.3s;
+    }
+    .product-card:hover .card-img-bg { opacity: 0.12; }
+
+    .card-badge {
+      position: absolute; top: 12px; left: 12px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      padding: 3px 8px;
+      background: currentColor;
+      color: var(--bg-deep);
+    }
+
+    .card-body { padding: 20px 22px 24px; }
+
+    .card-cat {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: currentColor;
+      margin-bottom: 8px;
+      opacity: 0.8;
+    }
+
+    .card-name {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .card-desc {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    .card-footer {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .card-price {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: currentColor;
+    }
+    .card-price-old {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      text-decoration: line-through;
+      display: block;
+    }
+
+    .card-btn {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      padding: 8px 16px;
+      background: currentColor;
+      color: var(--bg-deep);
+      border: none; cursor: pointer;
+      clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+      transition: all 0.2s;
+    }
+    .card-btn:hover { filter: brightness(1.2); transform: scale(1.05); }
+
+    /* ─── SECTION BACKGROUNDS ─── */
+    #accesorios { background: var(--bg-deep); }
+    #piezas { background: linear-gradient(180deg, #04090f 0%, #07101e 100%); }
+    #perifericos { background: var(--bg-deep); }
+
+    /* Decorative diagonal dividers */
+    .divider-cyan {
+      width: 100%; height: 80px;
+      background: linear-gradient(135deg, transparent 49.5%, rgba(0,245,255,0.06) 49.5%, rgba(0,245,255,0.06) 50.5%, transparent 50.5%);
+      margin: 0;
+    }
+
+    /* ─── FEATURED BANNER ─── */
+    .featured-banner {
+      background: var(--bg-card2);
+      border: 1px solid var(--border);
+      padding: 50px 5%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      margin: 0 5% 80px;
+    }
+    .featured-banner::before {
+      content: '';
+      position: absolute; top: 0; left: 0;
+      width: 4px; height: 100%;
+      background: linear-gradient(180deg, var(--cyan), var(--purple));
+    }
+    .featured-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem; letter-spacing: 0.3em;
+      text-transform: uppercase; color: var(--orange);
+      margin-bottom: 1rem;
+    }
+    .featured-title {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(1.4rem, 3vw, 2.2rem);
+      font-weight: 900; color: #fff; margin-bottom: 1rem; line-height: 1.2;
+    }
+    .featured-title strong { color: var(--cyan); }
+    .featured-desc { color: var(--text-dim); line-height: 1.7; margin-bottom: 1.5rem; }
+    .featured-visual {
+      display: flex; align-items: center; justify-content: center;
+      font-size: 8rem;
+      position: relative;
+    }
+    .featured-visual::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle, rgba(0,245,255,0.12) 0%, transparent 70%);
+      animation: pulse 4s ease-in-out infinite;
+    }
+    .featured-specs {
+      display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 1.5rem;
+    }
+    .spec-pill {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      padding: 5px 12px;
+      border: 1px solid rgba(0,245,255,0.25);
+      color: var(--cyan);
+      letter-spacing: 0.1em;
+    }
+
+    /* ─── MARQUEE ─── */
+    .marquee-wrap {
+      overflow: hidden;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 0;
+      background: rgba(0,245,255,0.02);
+    }
+    .marquee-track {
+      display: flex; gap: 60px;
+      animation: marquee 25s linear infinite;
+      white-space: nowrap;
+    }
+    .marquee-item {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.75rem; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--text-dim);
+      flex-shrink: 0;
+    }
+    .marquee-item span { color: var(--cyan); margin-right: 60px; }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: #020508;
+      border-top: 1px solid var(--border);
+      padding: 60px 5% 30px;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 50px;
+    }
+    .footer-brand .nav-logo { font-size: 1.5rem; margin-bottom: 1rem; display: block; }
+    .footer-brand p { color: var(--text-dim); font-size: 0.9rem; line-height: 1.7; max-width: 260px; }
+
+    .footer-col h4 {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 1.2rem;
+    }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 0.6rem; }
+    .footer-col ul li a {
+      color: var(--text-dim); text-decoration: none;
+      font-size: 0.9rem; transition: color 0.2s;
+    }
+    .footer-col ul li a:hover { color: var(--cyan); }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .footer-bottom p {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem; color: var(--text-dim); letter-spacing: 0.1em;
+    }
+    .footer-socials { display: flex; gap: 12px; }
+    .social-btn {
+      width: 34px; height: 34px;
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; color: var(--text-dim);
+      text-decoration: none; transition: all 0.2s;
+    }
+    .social-btn:hover { border-color: var(--cyan); color: var(--cyan); box-shadow: var(--glow-cyan); }
+
+    /* ─── GLITCH EFFECT ─── */
+    @keyframes glitch {
+      0%, 100% { clip-path: inset(0 0 95% 0); transform: translate(-2px, 0); }
+      20% { clip-path: inset(30% 0 50% 0); transform: translate(2px, 0); }
+      40% { clip-path: inset(60% 0 20% 0); transform: translate(-1px, 0); }
+      60% { clip-path: inset(80% 0 5% 0); transform: translate(1px, 0); }
+      80% { clip-path: inset(10% 0 75% 0); transform: translate(0px, 0); }
+    }
+
+    .glitch {
+      position: relative;
+    }
+    .glitch::before, .glitch::after {
+      content: attr(data-text);
+      position: absolute; top: 0; left: 0;
+      font-family: inherit; font-size: inherit;
+      font-weight: inherit;
+    }
+    .glitch::before {
+      color: var(--cyan);
+      animation: glitch 4s infinite;
+      animation-delay: 1.5s;
+    }
+    .glitch::after {
+      color: var(--magenta);
+      animation: glitch 4s infinite reverse;
+      animation-delay: 2s;
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 900px) {
+      .nav-links { display: none; }
+      .featured-banner { grid-template-columns: 1fr; }
+      .featured-visual { display: none; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .hero-stats { gap: 1.5rem; }
+    }
+    @media (max-width: 600px) {
+      .footer-grid { grid-template-columns: 1fr; }
+      .hero-stats { flex-wrap: wrap; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">NEX<span>U</span>S<span style="color:#fff;font-size:0.6em;margin-left:6px;vertical-align:middle;color:var(--text-dim)">STORE</span></div>
+  <ul class="nav-links">
+    <li><a href="#accesorios">Accesorios</a></li>
+    <li><a href="#piezas">Piezas</a></li>
+    <li><a href="#perifericos">Periféricos</a></li>
+    <li><a href="#">Ofertas</a></li>
+  </ul>
+  <button class="nav-cart">🛒 Carrito (0)</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="hero-orb hero-orb-3"></div>
+
+  <div class="hero-eyebrow" data-aos="fade-down" data-aos-duration="600">Electrónica de Alta Gama</div>
+  <h1 class="hero-title">
+    <span class="line1 glitch" data-text="DOMINA">DOMINA</span>
+    <span class="line2">EL JUEGO</span>
+  </h1>
+  <p class="hero-sub" data-aos="fade-up" data-aos-delay="200">Hardware de elite para gamers que no se conforman con menos. Accesorios, piezas y periféricos al límite del rendimiento.</p>
+  <div class="hero-cta" data-aos="fade-up" data-aos-delay="350">
+    <a href="#accesorios" class="btn-primary">Ver Catálogo</a>
+    <a href="#" class="btn-outline">Ofertas del Día</a>
+  </div>
+  <div class="hero-stats" data-aos="fade-up" data-aos-delay="500">
+    <div class="stat-item">
+      <div class="stat-num">500+</div>
+      <div class="stat-label">Productos</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <div class="stat-num">48h</div>
+      <div class="stat-label">Envío Express</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <div class="stat-num">24/7</div>
+      <div class="stat-label">Soporte</div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <div class="marquee-item"><span>⚡</span>ENVÍO GRATIS EN COMPRAS +$150</div>
+    <div class="marquee-item"><span>//</span>GARANTÍA EXTENDIDA 2 AÑOS</div>
+    <div class="marquee-item"><span>⚡</span>NUEVAS GPUS RTX 5090 DISPONIBLES</div>
+    <div class="marquee-item"><span>//</span>DESCUENTO 15% EN PRIMERAS COMPRAS</div>
+    <div class="marquee-item"><span>⚡</span>SOPORTE TÉCNICO 24/7</div>
+    <div class="marquee-item"><span>//</span>STOCK RENOVADO SEMANALMENTE</div>
+    <!-- repeat for infinite effect -->
+    <div class="marquee-item"><span>⚡</span>ENVÍO GRATIS EN COMPRAS +$150</div>
+    <div class="marquee-item"><span>//</span>GARANTÍA EXTENDIDA 2 AÑOS</div>
+    <div class="marquee-item"><span>⚡</span>NUEVAS GPUS RTX 5090 DISPONIBLES</div>
+    <div class="marquee-item"><span>//</span>DESCUENTO 15% EN PRIMERAS COMPRAS</div>
+    <div class="marquee-item"><span>⚡</span>SOPORTE TÉCNICO 24/7</div>
+    <div class="marquee-item"><span>//</span>STOCK RENOVADO SEMANALMENTE</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SECCIÓN 1: ACCESORIOS
+══════════════════════════════════════ -->
+<section id="accesorios">
+  <div class="section-header" data-aos="fade-up">
+    <div class="section-tag" style="color: var(--cyan)">Categoría 01</div>
+    <h2 class="section-title" style="color:#fff">
+      ACCESORIOS
+      <span>Complementa tu setup con los mejores accesorios gaming</span>
+    </h2>
+    <div class="section-line" style="background: linear-gradient(90deg, transparent, var(--cyan), transparent)"></div>
+  </div>
+
+  <div class="featured-banner" data-aos="fade-up" data-aos-delay="100">
+    <div>
+      <div class="featured-label">// PRODUCTO DESTACADO</div>
+      <h3 class="featured-title">Silla Gaming <strong>NEXUS PRO X</strong></h3>
+      <p class="featured-desc">Ergonomía extrema con soporte lumbar magnético, reposabrazo 4D y espuma de alta densidad. Diseñada para sesiones de 12+ horas sin fatiga.</p>
+      <div class="featured-specs">
+        <span class="spec-pill">4D Armrest</span>
+        <span class="spec-pill">Lumbar Magnético</span>
+        <span class="spec-pill">Hasta 150kg</span>
+        <span class="spec-pill">180° reclinable</span>
+      </div>
+      <br/>
+      <a href="#" class="btn-primary" style="margin-top:1rem">Ver Detalles — $349</a>
+    </div>
+    <div class="featured-visual">🪑</div>
+  </div>
+
+  <div class="product-grid">
+    <!-- Card 1 -->
+    <div class="product-card" data-aos="fade-up" data-aos-delay="0">
+      <div class="card-img">
+        <div class="card-img-bg" style="background: radial-gradient(circle, var(--cyan), transparent)"></div>
+        <span class="card-badge">NUEVO</span>
+        🎮
+      </div>
+      <div class="card-body">
+        <div class="card-cat">Accesorios / Control</div>
+        <div class="card-name">NEXUS Controller Pro</div>
+        <div class="card-desc">Triggers adaptativos con retroalimentación háptica. Batería de 20 horas. Compatible con PC, PS5 y Xbox.</div>
+        <div class="card-footer">
+          <div>
+            <span class="card-price-old">$89.99</span>
+            <span class="card-price">$69.99</span>
+          </div>
+          <button class="card-btn">+ Carrito</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="product-card" data-aos="fade-up" data-aos-delay="80">
+      <div class="card-img">
+        <div class="card-img-bg" style="background: radial-gradient(circle, var(--cyan), transparent)"></div>
+        🎧
+      </div>
+      <div class="card-body">
+        <div class="card-cat">Accesorios / Audio</div>
+        <div class="card-name">NEXUS Headset 7.1</div>
+        <div class="card-desc">Sonido surround 7.1 virtual, micrófono retráctil con cancelación de ruido. Diseño RGB personalizable.</div>
+        <div class="card-footer">
+          <div>
+            <span class="card-price-old">$129</span>
+            <span class="card-price">$99</span>
+          </div>
+          <button class="card-btn">+ Carrito</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="product-card" data-aos="fade-up" data-aos-delay="160">
+      <div class="card-img">
+        <div class="card-img-bg" style="background: radial-gradient(circle, var(--cyan), transparent)"></div>
+        <span class="card-badge" style="background:var(--orange);color:#fff">HOT</span>
+        💡
+      </div>
+      <div class="card-body">
+        <div class="card-cat">Accesorios / Iluminación</div>
+        <div class="card-name">RGB Light Bar Duo</div>
+        <div class="card-desc">Tira LED 2m con 16M colores, sincronización con música y juego. App móvil incluida. ARGB 5V.</div>
+        <div class="card-footer">
+          <div>
+            <span class="card-price-old">$45</span>
+            <span class="card-price">$32</span>
+          </div>
+          <button class="card-btn">+ Carrito</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="product-card" data-aos="fade-up" data-aos-delay="240">
+      <div class="card-img">
+        <div class="card-img-bg" style="background: radial-gradient(circle, var(--cyan), transparent)"></div>
+        🖥️
+      </div>
+      <div class="card-body">
+        <div class="card-cat">Accesorios / Soporte</div>
+        <div class="card-name">Dual Monitor Arm</div>
+        <div class="card-desc">Brazo doble con gestión de cables integrada. Ajuste de altura, inclinación y rotación. Hasta 27".</div>
+        <div class="card-footer">
+          <div>
+            <span class="card-price-old">$110</span>
+            <span class="card-price">$88</span>
+          </div>
+          <button class="card-btn">+ Carrito</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     SECCIÓN 2: PIEZAS
+══════════════════════════════════════ -->
+<section id="piezas">
+  <div class="section-header" data-aos="fade-up">
+    <div class="section-tag" style="color: var(--magenta)">Categoría 02</div>
+    <h2 class="section-title" style="color:#fff">
+      PIEZAS
+      <span>Componentes de alto rendimiento para tu build ideal</span>
+    </h2>
+    <div class="section-line" style="background: linear-gradient(90deg, transparent, var(--magenta), transparent)"></div>
+  </div>
+
+  <div class="featured-banner" data-aos="fade-up" data-aos-delay="100" style="border-left: none;">
+    <div>
+      <div class="featured-label" style="color: var(--magenta)">// COMPONENTE ESTRELLA</div>
+      <h3 class="featured-title">GPU <strong style="color:var(--magenta)">RTX 5090 Ti</strong></h3>
+      <p class="featured-desc">24GB GDDR7, 4K a 240fps sin compromisos. Motor de ray tracing de cuarta generación. DLSS 4.0 incluido. El futuro del gaming ya está aquí.</p>
+      <div class="featured-specs">
+        <span class="spec-pill" style="border-color:rgba(255,0,170,0.25);color:var(--magenta)">24GB GDDR7</span>
+        <span class="spec-pill" style="border-color:rgba(255,0,170,0.25);color:var(--magenta)">16384 CUDA</span>
+        <span class="spec-pill" style="border-color:rgba(255,0,170,0.25);color:var(--magenta)">DLSS 4.0</span>
+        <span class="spec-pill" style="border-color:rgba(255,0,170,0.25);color:var(--magenta)">PCIe 5.0</span>
+      </div>
+      <br/>
+      <a href="#" class="btn-primary" style="background:linear-gradient(135deg,var(--magenta),#880055)">Ver Detalles — $1,799</a>
+    </div>
+    <div class="featured-visual" style="font-size:7rem">
+      <span style="filter:drop-shadow(0 0 40px rgba(255,0,170,0.6))">🎮</span>
+    </div>
+  </div>
+
+  <div class="product-grid">
+    <div class="product-card" data-aos="fade-up" data-aos-delay="0">
+      <div class="card-img">
+        <div class="card-img-bg" style="background: radial-gradient(circle, var(--magenta), transparent)"></div>
+        <span class="card-badge" style="background:var(--magenta)">TOP</span>
+        🧠
+      </div>
+      <div class="card-body">
+        <div class="card-cat">Piezas / CPU</div>
+        <div class="card-name">Ryzen 9 9950X</div>
+        <div class="card-desc">16 núcleos, 32 hilos. Boost hasta 5.7GHz. Arquitectura Zen 5. Ideal para streaming y gaming simultáneo.</div>
+        <div class="card-footer">
+          <div>
+            <span class="card-price-old">$799</span>
+            <span class="card-price">$649</span>
+          </div>
+          <button class="card-btn">+ Carrito</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card" data-aos="fade-up" data-aos-delay="80">
+      <div class="card-img">
+        <div class="card-img-bg" style="background: radial-gradient(circle, var(--magenta), transparent)"></div>
+        💾
+      </div>
+      <div class="card-body">
+        <div class="card-cat">Piezas / RAM</div>
+        <div class="card-name">Kingston FURY Beast DDR5</div>
+        <div class="card-desc">64GB (2x32GB) DDR5-6400. EXPO & XMP 3.0. Disipadores de aluminio anodizado. RGB direccionable.</div>
+        <div class="card-footer">
+          <div>
+            <span class="card-price-old">$290</span>
+            <span class="card-price">$239</span>
+          </div>
+          <button class="card-btn">+ Carrito</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card" data-aos="fade-up" data-aos-delay="160">
+      <div class="card-img">
+        <div class="card-img-bg" style="background: radial-gradient(circle, var(--magenta), transparent)"></div>
+        <span class="card-badge" style="background:var(--magenta)">RÁPIDO</span>
+        💿
+      </div>
+      <div class="card-body">
+        <div class="card-cat">Piezas / Almacenamiento</div>
+        <div class="card-name">Samsung 990 Pro 4TB</div>
+        <div class="card-desc">NVMe PCIe 5.0. 14,500 MB/s lectura secuencial. Sin tiempos de carga en juegos. M.2 2280.</div>
+        <div class="card-footer">
+          <div>
+            <span class="card-price-old">$380</span>
+            <span class="card-price">$299</span>
+          </div>
+          <button class="card-btn">+ Carrito</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card" data-aos="fade-up" data-aos-delay="240">
+      <div class="card-img">
+        <div class="card-img-bg" style="background: radial-gradient(circle, var(--magenta), transparent)"></div>
+        🌡️
+      </div>
+      <div class="card-body">
+        <div class="card-cat">Piezas / Refrigeración</div>
+        <div class="card-name">NZXT Kraken Elite 360</div>
+        <div class="card-desc">AIO 360mm con pantalla LCD personalizable, 3 ventiladores de 120mm. Temperatura mínima garantizada.</div>
+        <div class="card-footer">
+          <div>
+            <span class="card-price-old">$230</span>
+            <span class="card-price">$189</span>
+          </div>
+          <button class="card-btn">+ Carrito</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     SECCIÓN 3: PERIFÉRICOS
+══════════════════════════════════════ -->
+<section id="perifericos">
+  <div class="section-header" data-aos="fade-up">
+    <div class="section-tag" style="color: var(--green)">Categoría 03</div>
+    <h2 class="section-title" style="color:#fff">
+      PERIFÉRICOS
+      <span>Precisión milimétrica para jugadas que marcan la diferencia</span>
+    </h2>
+    <div class="section-line" style="background: linear-gradient(90deg, transparent, var(--green), transparent)"></div>
+  </div>
+
+  <div class="featured-banner" data-aos="fade-up" data-aos-delay="100" style="border-left:none;">
+    <div>
+      <div class="featured-label" style="color: var(--green)">// PERIFÉRICO ELITE</div>
+      <h3 class="featured-title">Monitor <strong style="color:var(--green)">ASUS ROG Swift</strong></h3>
+      <p class="featured-desc">32" QHD 360Hz. Panel OLED con tiempo de respuesta 0.03ms. G-Sync Ultimate + FreeSync Premium. Contraste infinito.</p>
+      <div class="featured-specs">
+        <span class="spec-pill" style="border-color:rgba(57,255,20,0.25);color:var(--green)">360Hz OLED</span>
+        <span class="spec-pill" style="border-color:rgba(57,255,20,0.25);color:var(--green)">0.03ms GTG</span>
+        <span class="spec-pill" style="border-color:rgba(57,255,20,0.25);color:var(--green)">HDR 1000</span>
+        <span class="spec-pill" style="border-color:rgba(57,255,20,0.25);color:var(--green)">USB-C 90W</span>
+      </div>
+      <br/>
+      <a href="#" class="btn-primary" style="background:linear-gradient(135deg,var(--green),#1a8800);color:#050a00">Ver Detalles — $1,249</a>
+    </div>
+    <div class="featured-visual" style="font-size:7rem">
+      <span style="filter:drop-shadow(0 0 40px rgba(57,255,20,0.5))">🖥️</span>
+    </div>
+  </div>
+
+  <div class="product-grid">
+    <div class="product-card" data-aos="fade-up" data-aos-delay="0">
+      <div class="card-img">
+        <div class="card-img-bg" style="background: radial-gradient(circle, var(--green), transparent)"></div>
+        <span class="card-badge" style="background:var(--green);color:#000">PRO</span>
+        🖱️
+      </div>
+      <div class="card-body">
+        <div class="card-cat">Periféricos / Mouse</div>
+        <div class="card-name">Logitech G Pro X2</div>
+        <div class="card-desc">Sensor HERO 25K, 25,600 DPI. Diseño simétrico ambidiestro. 95g de peso. Cable Powerline flexible.</div>
+        <div class="card-footer">
+          <div>
+            <span class="card-price-old">$160</span>
+            <span class="card-price">$129</span>
+          </div>
+          <button class="card-btn">+ Carrito</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card" data-aos="fade-up" data-aos-delay="80">
+      <div class="card-img">
+        <div class="card-img-bg" style="background: radial-gradient(circle, var(--green), transparent)"></div>
+        ⌨️
+      </div>
+      <div class="card-body">
+        <div class="card-cat">Periféricos / Teclado</div>
+        <div class="card-name">Wooting 60HE+</div>
+        <div class="card-desc">Switches analógicos Hall Effect. 8000Hz polling rate. SOCD nativo. El favorito de los pros de FPS.</div>
+        <div class="card-footer">
+          <div>
+            <span class="card-price-old">$175</span>
+            <span class="card-price">$149</span>
+          </div>
+          <button class="card-btn">+ Carrito</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card" data-aos="fade-up" data-aos-delay="160">
+      <div class="card-img">
+        <div class="card-img-bg" style="background: radial-gradient(circle, var(--green), transparent)"></div>
+        🖱️
+      </div>
+      <div class="card-body">
+        <div class="card-cat">Periféricos / Mousepad</div>
+        <div class="card-name">Artisan Ninja FX Zero</div>
+        <div class="card-desc">Superficie soft premium XL (500x420mm). Textura mixta de alto control. Base antideslizante de caucho.</div>
+        <div class="card-footer">
+          <div>
+            <span class="card-price-old">$65</span>
+            <span class="card-price">$52</span>
+          </div>
+          <button class="card-btn">+ Carrito</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card" data-aos="fade-up" data-aos-delay="240">
+      <div class="card-img">
+        <div class="card-img-bg" style="background: radial-gradient(circle, var(--green), transparent)"></div>
+        <span class="card-badge" style="background:var(--green);color:#000">4K</span>
+        📷
+      </div>
+      <div class="card-body">
+        <div class="card-cat">Periféricos / Cámara</div>
+        <div class="card-name">Elgato Facecam Pro</div>
+        <div class="card-desc">Sensor Sony 1/1.8". 4K 60fps sin compresión. FOV ajustable 90°. Ideal para streaming profesional.</div>
+        <div class="card-footer">
+          <div>
+            <span class="card-price-old">$320</span>
+            <span class="card-price">$279</span>
+          </div>
+          <button class="card-btn">+ Carrito</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <span class="nav-logo">NEX<span>U</span>S STORE</span>
+      <p>La tienda de electrónica y gaming más avanzada. Hardware de elite para los que juegan en serio.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Tienda</h4>
+      <ul>
+        <li><a href="#">Accesorios</a></li>
+        <li><a href="#">Piezas</a></li>
+        <li><a href="#">Periféricos</a></li>
+        <li><a href="#">Ofertas</a></li>
+        <li><a href="#">Novedades</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Soporte</h4>
+      <ul>
+        <li><a href="#">FAQ</a></li>
+        <li><a href="#">Rastrear pedido</a></li>
+        <li><a href="#">Garantías</a></li>
+        <li><a href="#">Devoluciones</a></li>
+        <li><a href="#">Contacto</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Empresa</h4>
+      <ul>
+        <li><a href="#">Sobre Nosotros</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Afiliados</a></li>
+        <li><a href="#">Privacidad</a></li>
+        <li><a href="#">Términos</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 NEXUS STORE — Todos los derechos reservados</p>
+    <div class="footer-socials">
+      <a href="#" class="social-btn">𝕏</a>
+      <a href="#" class="social-btn">▶</a>
+      <a href="#" class="social-btn">📸</a>
+      <a href="#" class="social-btn">💬</a>
+    </div>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script>
+  AOS.init({
+    duration: 700,
+    easing: 'ease-out-cubic',
+    once: true,
+    offset: 60
+  });
+
+  // Cart interaction
+  let cartCount = 0;
+  document.querySelectorAll('.card-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      cartCount++;
+      document.querySelector('.nav-cart').textContent = `🛒 Carrito (${cartCount})`;
+      btn.textContent = '✓ Añadido';
+      btn.style.background = 'var(--green)';
+      setTimeout(() => {
+        btn.textContent = '+ Carrito';
+        btn.style.background = '';
+      }, 1500);
+    });
+  });
+</script>
+</body>
+</html>
